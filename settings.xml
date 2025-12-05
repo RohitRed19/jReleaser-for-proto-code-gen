@@ -41,7 +41,7 @@
     </profiles>
     <servers>
         <server>
-            <id>testing-nexus</id>
+            <id>local-nexus</id>
             <username>${NEXUS_USER}</username>
             <password>${NEXUS_PASSWORD}</password>
         </server>
