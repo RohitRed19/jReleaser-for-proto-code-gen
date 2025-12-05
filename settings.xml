@@ -27,8 +27,8 @@
                     </snapshots>
                 </repository>
                 <repository>
-                    <id>local</id>
-                    <url>http://localhost:8082/repository/maven-local/</url>
+                    <id>testing</id>
+                    <url>http://localhost:8082/repository/maven-testing</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>
@@ -41,7 +41,7 @@
     </profiles>
     <servers>
         <server>
-            <id>local-nexus</id>
+            <id>testing-nexus</id>
             <username>${NEXUS_USER}</username>
             <password>${NEXUS_PASSWORD}</password>
         </server>

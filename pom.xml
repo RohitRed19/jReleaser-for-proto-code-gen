@@ -14,11 +14,11 @@
 
     <distributionManagement>
         <repository>
-            <id>local-nexus</id>
-            <url>http://localhost:8082/repository/maven-local/</url>
+            <id>testing-nexus</id>
+            <url>http://localhost:8082/repository/maven-testing/</url>
         </repository>
         <snapshotRepository>
-            <id>local-nexus</id>
+            <id>snapshot-nexus</id>
             <url>http://localhost:8082/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
