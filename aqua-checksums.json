@@ -1,0 +1,129 @@
+{
+  "checksums": [
+    {
+      "id": "github_release/github.com/grpc/grpc-go/cmd/protoc-gen-go-grpc/v1.3.0/protoc-gen-go-grpc.v1.3.0.darwin.amd64.tar.gz",
+      "checksum": "C72C0CF540600458150F9C5DB27F7EDD9C029AA4C5A56B8C3762F7C0192BE45F",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/grpc/grpc-go/cmd/protoc-gen-go-grpc/v1.3.0/protoc-gen-go-grpc.v1.3.0.linux.amd64.tar.gz",
+      "checksum": "A2893F7DB287BC8C54A8AE633C1A84482DD21A270F97AD1C63772B93EE8C0D35",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/grpc/grpc-go/cmd/protoc-gen-go-grpc/v1.3.0/protoc-gen-go-grpc.v1.3.0.windows.amd64.tar.gz",
+      "checksum": "104BFEE6C3C9775F4C75926BDF38BB1A9EC8B485743336843F14240F8ED637FF",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/grpc/grpc-go/cmd/protoc-gen-go-grpc/v1.5.1/protoc-gen-go-grpc.v1.5.1.darwin.amd64.tar.gz",
+      "checksum": "C12C259D59C8B451F24B6ABDAD6D055FD0884C5268B7247FD7E5EC9D2432D1F1",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/grpc/grpc-go/cmd/protoc-gen-go-grpc/v1.5.1/protoc-gen-go-grpc.v1.5.1.linux.amd64.tar.gz",
+      "checksum": "A6CAC4EA731E54AEA304AD44D704A69D1CDC82997084B33637E21A89DC9229D6",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/grpc/grpc-go/cmd/protoc-gen-go-grpc/v1.5.1/protoc-gen-go-grpc.v1.5.1.windows.amd64.tar.gz",
+      "checksum": "C2AD1460C9E34B5B37759826DA61220BE6EE0A8A11431723D205512A69319991",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/protocolbuffers/protobuf-go/v1.31.0/protoc-gen-go.v1.31.0.darwin.amd64.tar.gz",
+      "checksum": "7890E2790DD68B181B1F6C33F306073E0ABDA3E7F360548E0B5CCB5FC20485A5",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/protocolbuffers/protobuf-go/v1.31.0/protoc-gen-go.v1.31.0.linux.amd64.tar.gz",
+      "checksum": "04414C31A3AF6F908D4359FF12A02F7EF864417978E303CCC62053AF536AE13C",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/protocolbuffers/protobuf-go/v1.31.0/protoc-gen-go.v1.31.0.windows.amd64.zip",
+      "checksum": "1F3B3F5DBCA9312AF5BF89574E3C22A5AFA77DF0F8F44E22E8D317922B371681",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/protocolbuffers/protobuf-go/v1.36.1/protoc-gen-go.v1.36.1.darwin.amd64.tar.gz",
+      "checksum": "E0B1E3897028BDC26F87AC54DCBC4EBE8FB568E7FAE0277AD99DC85603167C95",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/protocolbuffers/protobuf-go/v1.36.1/protoc-gen-go.v1.36.1.linux.amd64.tar.gz",
+      "checksum": "92B02DDA358947D196756F4A21ADB6265135AE6C9BC92CB2E2583B7BE164E6C0",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/protocolbuffers/protobuf-go/v1.36.1/protoc-gen-go.v1.36.1.windows.amd64.zip",
+      "checksum": "B079263A9DEA9939689C904E8A70C4FD9060B46F4A7EA544DFA76AD2B83854E1",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "http/golang.org/dl/go1.20.2.darwin-amd64.tar.gz",
+      "checksum": "C93B8CED9517D07E1CD4C362C6E2D5242CB139E29B417A328FBF19ADED08764C",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "http/golang.org/dl/go1.20.2.darwin-arm64.tar.gz",
+      "checksum": "7343C87F19E79C0063532E82E1C4D6F42175A32D99F7A4D15E658E88BF97F885",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "http/golang.org/dl/go1.20.2.linux-amd64.tar.gz",
+      "checksum": "4EAEA32F59CDE4DC635FBC42161031D13E1C780B87097F4B4234CFCE671F1768",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "http/golang.org/dl/go1.20.2.linux-arm64.tar.gz",
+      "checksum": "78D632915BB75E9A6356A47A42625FD1A785C83A64A643FEDD8F61E31B1B3BEF",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "http/golang.org/dl/go1.20.2.windows-amd64.zip",
+      "checksum": "FE439F0E438F7555A7F5F7194DDB6F4A07B0DE1FA414385D19F2AEB26D9F43DB",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "http/golang.org/dl/go1.20.2.windows-arm64.zip",
+      "checksum": "AC5010C8B8B22849228A8DEA698D58B9C7BE2195D30C6D778CCE0F709858FA64",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "http/golang.org/dl/go1.22.5.darwin-amd64.tar.gz",
+      "checksum": "95D9933CDCF45F211243C42C7705C37353CCCD99F27EB4D8E2D1BF2F4165CB50",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "http/golang.org/dl/go1.22.5.darwin-arm64.tar.gz",
+      "checksum": "4CD1BCB05BE03CECB77BCCD765785D5FF69D79ADF4DD49790471D00C06B41133",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "http/golang.org/dl/go1.22.5.linux-amd64.tar.gz",
+      "checksum": "904B924D435EAEA086515BC63235B192EA441BD8C9B198C507E85009E6E4C7F0",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "http/golang.org/dl/go1.22.5.linux-arm64.tar.gz",
+      "checksum": "8D21325BFCF431BE3660527C1A39D3D9AD71535FABDF5041C826E44E31642B5A",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "http/golang.org/dl/go1.22.5.windows-amd64.zip",
+      "checksum": "59968438B8D90F108FD240D4D2F95B037E59716995F7409E0A322DCB996E9F42",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "http/golang.org/dl/go1.22.5.windows-arm64.zip",
+      "checksum": "6717D5841162AA8C05F932EB74A643F1310B8A88F80F0830E86D194289734BBF",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "registries/github_content/github.com/aquaproj/aqua-registry/v4.231.0/registry.yaml",
+      "checksum": "7FCC23C29FE2121F123D9F122B4A034C1BA3BDF485F8EF9415F9F21BA61C8A10",
+      "algorithm": "sha256"
+    }
+  ]
+}

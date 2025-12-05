@@ -1,0 +1,5 @@
+[registries]
+nexus = { index = "sparse+http://localhost:8082/repository/cargo-hosted/" }
+
+[registry]
+global-credential-providers = ["cargo:token"]

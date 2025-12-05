@@ -1,0 +1,18 @@
+---
+# aqua - Declarative CLI Version Manager
+# https://aquaproj.github.io/
+checksum:
+  enabled: true
+  require_checksum: true
+  supported_envs:
+  - all
+registries:
+- type: standard
+  ref: v4.231.0 # renovate: depName=aquaproj/aqua-registry
+packages:
+# Go runtime
+- name: golang/go@go1.22.5
+
+# Go protobuf plugins
+- name: protocolbuffers/protobuf-go/protoc-gen-go@v1.36.1
+- name: grpc/grpc-go/protoc-gen-go-grpc@cmd/protoc-gen-go-grpc/v1.5.1

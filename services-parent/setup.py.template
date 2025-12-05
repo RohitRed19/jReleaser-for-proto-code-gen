@@ -1,0 +1,29 @@
+from setuptools import setup
+import os
+import glob
+
+# Find all .py files in the current directory (excluding setup.py)
+py_files = glob.glob('*.py')
+py_modules = [os.path.splitext(f)[0] for f in py_files if f != 'setup.py' and f != '__init__.py']
+
+setup(
+    name="${python.package.name}",
+    version="${python.package.version}",
+    description="gRPC services for ${project.artifactId}",
+    author="Media.net",
+    py_modules=py_modules,
+    install_requires=[
+        "grpcio>=1.76.0",
+        "protobuf>=6.31.1",
+    ],
+    python_requires=">=3.8",
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+    ],
+)
