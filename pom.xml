@@ -18,8 +18,8 @@
             <url>http://localhost:8082/repository/maven-testing/</url>
         </repository>
         <snapshotRepository>
-            <id>snapshot-nexus</id>
-            <url>http://localhost:8082/repository/maven-snapshots/</url>
+            <id>testing-nexus-snapshots</id>
+            <url>http://localhost:8082/repository/maven-testing/</url>
         </snapshotRepository>
     </distributionManagement>
 
