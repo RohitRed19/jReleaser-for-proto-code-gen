@@ -1,0 +1,74 @@
+# JReleaser Configuration
+# https://jreleaser.org/guide/latest/index.html
+
+project:
+  name: jreleaser-services
+  description: Multi-language Protocol Buffer code generation with release management
+  longDescription: |
+    A project demonstrating multi-language protobuf/gRPC code generation 
+    for Java, Go, Python, and Rust using Maven and JReleaser.
+  website: https://github.com/RohitRed19/jReleaser-for-proto-code-gen
+  authors:
+    - RohitRed19
+  license: MIT
+  inceptionYear: "2024"
+  tags:
+    - protobuf
+    - grpc
+    - java
+    - go
+    - python
+    - rust
+    - maven
+
+release:
+  github:
+    owner: RohitRed19
+    name: jReleaser-for-proto-code-gen
+    overwrite: true
+    draft: false
+    changelog:
+      enabled: true
+      formatted: ALWAYS
+      preset: conventional-commits
+      contributors:
+        enabled: true
+      hide:
+        categories:
+          - merge
+        contributors:
+          - GitHub
+          - dependabot
+      labelers:
+        - label: 'feat'
+          title: 'regex:^(?:feat|feature)(?:\(.+\))?:'
+        - label: 'fix'
+          title: 'regex:^fix(?:\(.+\))?:'
+        - label: 'chore'
+          title: 'regex:^chore(?:\(.+\))?:'
+        - label: 'docs'
+          title: 'regex:^docs(?:\(.+\))?:'
+      categories:
+        - title: '🚀 Features'
+          key: features
+          labels:
+            - feat
+        - title: '🐛 Bug Fixes'
+          key: fixes
+          labels:
+            - fix
+        - title: '📝 Documentation'
+          key: docs
+          labels:
+            - docs
+        - title: '🧰 Maintenance'
+          key: chores
+          labels:
+            - chore
+
+signing:
+  active: NEVER
+
+announce:
+  active: NEVER
+
