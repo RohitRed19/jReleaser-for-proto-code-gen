@@ -1,6 +1,6 @@
 [package]
 name = "hello"
-version = "1.0.2"
+version = "1.4.0"
 edition = "2021"
 description = "Hello"
 build = "build.rs"
