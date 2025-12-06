@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.example.jreleaser</groupId>
         <artifactId>services-parent</artifactId>
-        <version>1.4</version>
+        <version>1.5-SNAPSHOT</version>
         <relativePath>../services-parent</relativePath>
     </parent>
 
@@ -26,8 +26,4 @@
             </plugin>
         </plugins>
     </build>
-
-  <scm>
-    <tag>v1.4</tag>
-  </scm>
 </project>
