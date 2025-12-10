@@ -1,74 +1,106 @@
-# JReleaser Configuration
-# https://jreleaser.org/guide/latest/index.html
+# JReleaser Configuration for grpc-services
+# This configuration creates GitLab releases with Go-compatible tags (v{version})
+# matching the Maven POM version.
 
+# Project metadata - version is read from pom.xml automatically when using Maven plugin
 project:
-  name: jreleaser-services
-  description: Multi-language Protocol Buffer code generation with release management
-  longDescription: |
-    A project demonstrating multi-language protobuf/gRPC code generation 
-    for Java, Go, Python, and Rust using Maven and JReleaser.
-  website: https://github.com/RohitRed19/jReleaser-for-proto-code-gen
-  authors:
-    - RohitRed19
-  license: MIT
-  inceptionYear: "2024"
-  tags:
-    - protobuf
-    - grpc
-    - java
-    - go
-    - python
-    - rust
-    - maven
+  name: grpc-services
+  description: gRPC Services for Java and Go
+  versionPattern: SEMVER
+  snapshot:
+    # Recognize Maven SNAPSHOT versions
+    pattern: .*-SNAPSHOT
+    # Use 'early-access' label for snapshot releases
+    label: early-access
 
+# GitLab release configuration
 release:
-  github:
-    owner: RohitRed19
-    name: jReleaser-for-proto-code-gen
-    overwrite: true
-    draft: false
+  gitlab:
+    # Enable GitLab releases
+    enabled: true
+    
+    # GitLab host (without protocol, JReleaser adds https://)
+    host: tree.mn
+    
+    # Repository owner (group/namespace)
+    owner: Video-AdExchange
+    
+    # Repository name
+    name: grpc-services
+    
+    # Tag name format: v{version} (e.g., v2.0.48)
+    # {{projectVersion}} is automatically resolved from Maven POM
+    tagName: v{{projectVersion}}
+    
+    # Release name format
+    releaseName: Release v{{projectVersion}}
+    
+    # Overwrite existing release with same tag (useful for re-releases)
+    overwrite: false
+    
+    # Update existing release instead of failing
+    update:
+      enabled: true
+      sections:
+      - ASSETS
+      - BODY
+    
+    # Skip creating the tag if it already exists
+    # Set to true if tags are created by maven-release-plugin
+    skipTag: false
+    
+    # Skip creating the release (only create tag)
+    skipRelease: false
+    
+    # Branch to release from
+    branch: master
+    
+    # Connection timeouts
+    connectTimeout: 20
+    readTimeout: 60
+    
+    # Changelog configuration
     changelog:
       enabled: true
       formatted: ALWAYS
       preset: conventional-commits
-      contributors:
-        enabled: true
+      # Hide merge commits and bot contributions
       hide:
         categories:
-          - merge
+        - merge
         contributors:
-          - GitHub
-          - dependabot
-      labelers:
-        - label: 'feat'
-          title: 'regex:^(?:feat|feature)(?:\(.+\))?:'
-        - label: 'fix'
-          title: 'regex:^fix(?:\(.+\))?:'
-        - label: 'chore'
-          title: 'regex:^chore(?:\(.+\))?:'
-        - label: 'docs'
-          title: 'regex:^docs(?:\(.+\))?:'
-      categories:
-        - title: '🚀 Features'
-          key: features
-          labels:
-            - feat
-        - title: '🐛 Bug Fixes'
-          key: fixes
-          labels:
-            - fix
-        - title: '📝 Documentation'
-          key: docs
-          labels:
-            - docs
-        - title: '🧰 Maintenance'
-          key: chores
-          labels:
-            - chore
+        - dependabot
+        - renovate
+    
+    # Milestone configuration (optional - link releases to milestones)
+    milestone:
+      close: false
 
-signing:
-  active: NEVER
+# Hooks to create additional tags for each Go module
+hooks:
+  command:
+    # Create Go module tags after the main release is successful
+    success:
+    # Tag for serving service
+    - filter:
+        includes: ['release']
+      cmd: 'git tag -f hello/go/{{projectVersion}} && git push origin serving/go/{{projectVersion}}'
+      verbose: true
+      continueOnError: false
 
-announce:
-  active: NEVER
-
+# Environment variables required:
+# - JRELEASER_GITLAB_TOKEN: GitLab Personal Access Token with api scope
+#   (or use CI_JOB_TOKEN in GitLab CI/CD)
+#
+#
+# Jenkins pipeline usage:
+#   withCredentials([string(credentialsId: 'gitlab-token', variable: 'JRELEASER_GITLAB_TOKEN')]) {
+#     sh 'mvn jreleaser:full-release'
+#   }
+#
+# Or set JRELEASER_PROJECT_VERSION explicitly if not using Maven plugin:
+#   environment {
+#     JRELEASER_PROJECT_VERSION = sh(script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed "s/-SNAPSHOT//"', returnStdout: true).trim()
+#   }
+#
+# Note: Git must be configured with push permissions for the hooks to succeed.
