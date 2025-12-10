@@ -146,6 +146,47 @@ Deploys:
 mvn release:prepare release:perform -s settings.xml
 ```
 
+## CI/CD with GitHub Actions
+
+This project includes GitHub Actions workflows for automated releases.
+
+### Manual Release Workflow
+
+Trigger a release manually from the GitHub Actions UI:
+
+1. Go to **Actions** → **Release** → **Run workflow**
+2. Optionally specify release and development versions
+3. The workflow will:
+   - Run `mvn release:prepare`
+   - Create Go module tags (e.g., `hello/go/v1.3.0`)
+   - Run `mvn release:perform`
+   - Create a GitHub Release with changelog
+
+### Automatic Release on Tag
+
+Push a version tag to trigger a release:
+
+```bash
+git tag v1.3.0
+git push origin v1.3.0
+```
+
+This will:
+- Create Go module tags automatically
+- Build all artifacts
+- Create a GitHub Release using JReleaser
+
+### Required Secrets
+
+Configure these secrets in your repository settings:
+
+| Secret | Description |
+|--------|-------------|
+| `NEXUS_USER` | Nexus repository username (optional) |
+| `NEXUS_PASSWORD` | Nexus repository password (optional) |
+
+> **Note**: `GITHUB_TOKEN` is automatically provided by GitHub Actions.
+
 ## Configuration
 
 ### Maven Settings
