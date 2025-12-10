@@ -271,29 +271,6 @@
                             </configuration>
                         </execution>
                         <execution>
-                            <id>publish-python-to-nexus</id>
-                            <phase>deploy</phase>
-                            <goals>
-                                <goal>exec</goal>
-                            </goals>
-                            <configuration>
-                                <executable>python3</executable>
-                                <arguments>
-                                    <argument>-m</argument>
-                                    <argument>twine</argument>
-                                    <argument>upload</argument>
-                                    <argument>--repository-url</argument>
-                                    <argument>${nexus.pypi.url}</argument>
-                                    <argument>--username</argument>
-                                    <argument>${NEXUS_USER}</argument>
-                                    <argument>--password</argument>
-                                    <argument>${NEXUS_PASSWORD}</argument>
-                                    <argument>--verbose</argument>
-                                    <argument>${python.output.path}/dist/*</argument>
-                                </arguments>
-                            </configuration>
-                        </execution>
-                        <execution>
                             <id>compile-rust</id>
                             <phase>compile</phase>
                             <goals>
@@ -306,23 +283,6 @@
                                 <arguments>
                                     <argument>build</argument>
                                     <argument>--release</argument>
-                                </arguments>
-                            </configuration>
-                        </execution>
-                        <execution>
-                            <id>publish-rust-to-nexus</id>
-                            <phase>deploy</phase>
-                            <goals>
-                                <goal>exec</goal>
-                            </goals>
-                            <configuration>
-                                <skip>${skipRust}</skip>
-                                <executable>cargo</executable>
-                                <workingDirectory>${rust.output.path}</workingDirectory>
-                                <arguments>
-                                    <argument>publish</argument>
-                                    <argument>--registry</argument>
-                                    <argument>nexus</argument>
                                 </arguments>
                             </configuration>
                         </execution>
