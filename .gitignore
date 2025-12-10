@@ -1,5 +1,6 @@
 ### Maven template
 .idea
+out
 python/
 */python
 target/

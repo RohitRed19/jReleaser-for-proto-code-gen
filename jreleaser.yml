@@ -15,20 +15,20 @@ project:
 
 # GitLab release configuration
 release:
-  gitlab:
+  github:
     # Enable GitLab releases
     enabled: true
     
     # GitLab host (without protocol, JReleaser adds https://)
-    host: tree.mn
+    host: github.com
     
     # Repository owner (group/namespace)
-    owner: Video-AdExchange
+    owner: RohitRed19
     
     # Repository name
-    name: grpc-services
+    name: jReleaser-for-proto-code-gen
     
-    # Tag name format: v{version} (e.g., v2.0.48)
+    # Tag name format: v{version} (e.g., v)
     # {{projectVersion}} is automatically resolved from Maven POM
     tagName: v{{projectVersion}}
     
@@ -36,14 +36,7 @@ release:
     releaseName: Release v{{projectVersion}}
     
     # Overwrite existing release with same tag (useful for re-releases)
-    overwrite: false
-    
-    # Update existing release instead of failing
-    update:
-      enabled: true
-      sections:
-      - ASSETS
-      - BODY
+    overwrite: true
     
     # Skip creating the tag if it already exists
     # Set to true if tags are created by maven-release-plugin
@@ -53,7 +46,7 @@ release:
     skipRelease: false
     
     # Branch to release from
-    branch: master
+    branch: main
     
     # Connection timeouts
     connectTimeout: 20
@@ -67,40 +60,25 @@ release:
       # Hide merge commits and bot contributions
       hide:
         categories:
-        - merge
+          - merge
         contributors:
-        - dependabot
-        - renovate
-    
-    # Milestone configuration (optional - link releases to milestones)
-    milestone:
-      close: false
+          - dependabot
+          - renovate
 
 # Hooks to create additional tags for each Go module
 hooks:
   command:
-    # Create Go module tags after the main release is successful
     success:
-    # Tag for serving service
-    - filter:
-        includes: ['release']
-      cmd: 'git tag -f hello/go/{{projectVersion}} && git push origin serving/go/{{projectVersion}}'
-      verbose: true
-      continueOnError: false
-
-# Environment variables required:
-# - JRELEASER_GITLAB_TOKEN: GitLab Personal Access Token with api scope
-#   (or use CI_JOB_TOKEN in GitLab CI/CD)
-#
-#
-# Jenkins pipeline usage:
-#   withCredentials([string(credentialsId: 'gitlab-token', variable: 'JRELEASER_GITLAB_TOKEN')]) {
-#     sh 'mvn jreleaser:full-release'
-#   }
-#
-# Or set JRELEASER_PROJECT_VERSION explicitly if not using Maven plugin:
-#   environment {
-#     JRELEASER_PROJECT_VERSION = sh(script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed "s/-SNAPSHOT//"', returnStdout: true).trim()
-#   }
-#
-# Note: Git must be configured with push permissions for the hooks to succeed.
+    # Step 1: Create the tag
+      - active: RELEASE
+        cmd: 'git tag -f hello/go/v{{projectVersion}}'
+        verbose: true
+        filter:
+          includes: [ 'release' ]
+    
+    # Step 2: Push the tag
+      - active: RELEASE
+        cmd: 'git push origin hello/go/v{{projectVersion}}'
+        verbose: true
+        filter:
+          includes: [ 'release' ]
