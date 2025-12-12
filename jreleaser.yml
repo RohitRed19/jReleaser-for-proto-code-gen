@@ -64,12 +64,10 @@ hooks:
         verbose: true
         filter:
           includes: [ 'release' ]
-        cmd: >
-          sh -c '
+        cmd: |
             echo "Committing release version v{{projectVersion}}..."
             git add -A
             git diff --cached --quiet || git commit -m "[release] prepare release v{{projectVersion}}"
-          '
 
     # ============================================
     # SUCCESS: After release - Go module tags + Next SNAPSHOT
