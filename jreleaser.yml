@@ -6,6 +6,7 @@
 project:
   name: grpc-services
   description: gRPC Services for Java and Go
+  copyright: 2025 RohitRed19
   versionPattern: SEMVER
   snapshot:
     # Recognize Maven SNAPSHOT versions
@@ -56,45 +57,35 @@ release:
 hooks:
   command:
     # ============================================
-    # BEFORE: Commit the release version
-    # (pom.xml must already have SNAPSHOT removed before running JReleaser)
+    # SUCCESS: After release - Deploy + Go tags + Next SNAPSHOT
     # ============================================
-    before:
+    success:
+      # Deploy to Nexus
       - active: RELEASE
         verbose: true
         filter:
           includes: [ 'release' ]
         cmd: |
-            echo "Committing release version v{{projectVersion}}..."
-            git add -A
-            git diff --cached --quiet || git commit -m "[release] prepare release v{{projectVersion}}"
-
-    # ============================================
-    # SUCCESS: After release - Go module tags + Next SNAPSHOT
-    # ============================================
-    success:
+          echo "Deploying to Nexus..."
+          mvn -B deploy -DskipTests -DskipRust=true -s settings.xml
+      
       # Create Go module tags
       - active: RELEASE
         verbose: true
         filter:
           includes: [ 'release' ]
         cmd: |
-            echo "Generating Go module tags..."
-            for mod in $(find . -name go.mod -not -path "*/target/*" -not -path "*/out/*"); do
-              dir=$(dirname "$mod")
-              dir=${dir#./}
-              module=${dir%/v[0-9]*}
-              
-              # Skip root go.mod if any
-              [ -z "$module" ] && continue
-              
-              tag="${module}/v{{projectVersion}}"
-              echo "Creating tag: $tag"
-              git tag -f "$tag"
-              git push origin "$tag"
-            done
-      
-
+          echo "Generating Go module tags..."
+          for mod in $(find . -name go.mod -not -path "*/target/*" -not -path "*/out/*"); do
+            dir=$(dirname "$mod")
+            dir=${dir#./}
+            module=${dir%/v[0-9]*}
+            [ -z "$module" ] && continue
+            tag="${module}/v{{projectVersion}}"
+            echo "Creating tag: $tag"
+            git tag -f "$tag"
+            git push origin "$tag"
+          done
       # Prepare for next development iteration
       - active: RELEASE
         verbose: true
