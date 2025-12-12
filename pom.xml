@@ -4,7 +4,7 @@
 
     <groupId>com.example.jreleaser</groupId>
     <artifactId>jreleaser-services</artifactId>
-    <version>1.15-SNAPSHOT</version>
+    <version>1.16-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -184,6 +184,9 @@
                     <artifactId>jreleaser-maven-plugin</artifactId>
                     <version>1.16.0</version>
                     <inherited>false</inherited>
+                    <configuration>
+                        <configFile>${project.basedir}/jreleaser.yml</configFile>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
