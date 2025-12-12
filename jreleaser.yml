@@ -79,9 +79,13 @@ hooks:
           for mod in $(find . -name go.mod -not -path "*/target/*" -not -path "*/out/*"); do
             dir=$(dirname "$mod")
             dir=${dir#./}
-            module=${dir%/v[0-9]*}
-            [ -z "$module" ] && continue
-            tag="${module}/v{{projectVersion}}"
+            # Determine module and tag. Handle root module specially.
+            if [ "$dir" = "." ] || [ -z "$dir" ]; then
+              tag="v{{projectVersion}}"
+            else
+              module=${dir%/v[0-9]*}
+              tag="${module}/v{{projectVersion}}"
+            fi
             echo "Creating tag: $tag"
             git tag -f "$tag"
             git push origin "$tag"
