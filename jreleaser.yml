@@ -84,6 +84,7 @@ hooks:
               dir=${dir#./}
               if [ "$dir" = "." ] || [ -z "$dir" ]; then
                 tag="v{{projectVersion}}"
+                continue
               else
                 module=${dir%/v[0-9]*}
                 tag="${module}/v{{projectVersion}}"
