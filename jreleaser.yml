@@ -22,7 +22,15 @@ release:
     name: jReleaser-for-proto-code-gen
     tagName: v{{projectVersion}}
     releaseName: Release v{{projectVersion}}
+    # Allow overwriting existing releases
     overwrite: true
+    # Also allow updating if overwrite fails
+    update:
+      enabled: true
+      sections:
+        - ASSETS
+        - TITLE
+        - BODY
     skipTag: false
     skipRelease: false
     branch: main
@@ -72,8 +80,7 @@ hooks:
         verbose: true
         filter:
           includes: [ 'release' ]
-        cmd: >
-          sh -c '
+        cmd: |
             echo "Generating Go module tags..."
             for mod in $(find . -name go.mod -not -path "*/target/*" -not -path "*/out/*"); do
               dir=$(dirname "$mod")
@@ -88,7 +95,7 @@ hooks:
               git tag -f "$tag"
               git push origin "$tag"
             done
-          '
+      
 
       # Prepare for next development iteration
       - active: RELEASE
