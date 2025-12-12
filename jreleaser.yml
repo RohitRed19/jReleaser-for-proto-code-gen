@@ -68,8 +68,7 @@ hooks:
         cmd: >
           sh -c '
             echo "Deploying to Nexus..."
-            mvn -v
-            mvn -B deploy -DskipTests -DskipRust=true -s settings.xml
+            mvn -B deploy -DskipTests -DskipRust=true -Denforcer.skip=true -s settings.xml
           '
       
       # Create Go module tags

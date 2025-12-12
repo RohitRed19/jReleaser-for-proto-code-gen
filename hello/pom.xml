@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.example.jreleaser</groupId>
         <artifactId>services-parent</artifactId>
-        <version>1.24-SNAPSHOT</version>
+        <version>1.25-SNAPSHOT</version>
         <relativePath>../services-parent</relativePath>
     </parent>
 
