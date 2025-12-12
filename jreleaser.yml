@@ -65,32 +65,35 @@ hooks:
         verbose: true
         filter:
           includes: [ 'release' ]
-        cmd: |
-          echo "Deploying to Nexus..."
-          mvn -B deploy -DskipTests -DskipRust=true -s settings.xml
+        cmd: >
+          sh -c '
+            echo "Deploying to Nexus..."
+            mvn -v
+            mvn -B deploy -DskipTests -DskipRust=true -s settings.xml
+          '
       
       # Create Go module tags
       - active: RELEASE
         verbose: true
         filter:
           includes: [ 'release' ]
-        cmd: |
-          echo "Generating Go module tags..."
-          for mod in $(find . -name go.mod -not -path "*/target/*" -not -path "*/out/*"); do
-            dir=$(dirname "$mod")
-            dir=${dir#./}
-            # Determine module and tag. Handle root module specially.
-            if [ "$dir" = "." ] || [ -z "$dir" ]; then
-              tag="v{{projectVersion}}"
-            else
-              module=${dir%/v[0-9]*}
-              tag="${module}/v{{projectVersion}}"
-            fi
-            echo "Creating tag: $tag"
-            git tag -f "$tag"
-            # Push quietly to avoid progress output on stderr being logged as errors
-            git push --no-progress -q origin "$tag"
-          done
+        cmd: >
+          sh -c '
+            echo "Generating Go module tags..."
+            for mod in $(find . -name go.mod -not -path "*/target/*" -not -path "*/out/*"); do
+              dir=$(dirname "$mod")
+              dir=${dir#./}
+              if [ "$dir" = "." ] || [ -z "$dir" ]; then
+                tag="v{{projectVersion}}"
+              else
+                module=${dir%/v[0-9]*}
+                tag="${module}/v{{projectVersion}}"
+              fi
+              echo "Creating tag: $tag"
+              git tag -f "$tag"
+              git push --no-progress -q origin "$tag"
+            done
+          '
       # Prepare for next development iteration
       - active: RELEASE
         verbose: true
