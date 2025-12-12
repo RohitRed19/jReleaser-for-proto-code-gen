@@ -2,13 +2,7 @@ name: Release
 
 on:
   workflow_dispatch:
-    inputs:
-      releaseVersion:
-        description: 'Release version (e.g., 1.6)'
-        required: true
-      nextVersion:
-        description: 'Next development version (e.g., 1.7-SNAPSHOT)'
-        required: true
+    # No inputs required - versions are calculated automatically!
 
 jobs:
   release:
@@ -72,21 +66,23 @@ jobs:
           EOF
 
       # ============================================
-      # Stage 1: Prepare Release Version
-      # (Replaces: maven-release-plugin prepare release)
+      # Step 1: Remove SNAPSHOT from version
+      # (Must be done before JReleaser reads version)
       # ============================================
-      - name: Set release version
+      - name: Remove SNAPSHOT from version
         run: |
-          echo "Setting version to ${{ inputs.releaseVersion }}"
-          mvn -B versions:set -DnewVersion=${{ inputs.releaseVersion }}
+          mvn -B versions:set -DremoveSnapshot -DprocessAllModules
+          mvn -B versions:commit
           
-      - name: Commit release version
+      - name: Get release version
+        id: version
         run: |
-          git add -A
-          git commit -m "[release] prepare release v${{ inputs.releaseVersion }}"
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Release version: $VERSION"
 
       # ============================================
-      # Stage 2: Build and Deploy
+      # Step 2: Build artifacts
       # ============================================
       - name: Build artifacts
         run: mvn -B clean package -DskipTests -DskipRust=true
@@ -100,49 +96,17 @@ jobs:
         continue-on-error: true
 
       # ============================================
-      # Stage 3: Create Release with JReleaser
-      # (Creates Git tag + GitHub Release + Changelog)
+      # Step 3: JReleaser handles everything else!
+      # - Commits release version
+      # - Creates Git tag + GitHub Release
+      # - Creates Go module tags
+      # - Sets next SNAPSHOT version
+      # - Commits and pushes
       # ============================================
       - name: Release with JReleaser
         uses: jreleaser/release-action@v2
         env:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          JRELEASER_PROJECT_VERSION: ${{ inputs.releaseVersion }}
+          JRELEASER_PROJECT_VERSION: ${{ steps.version.outputs.VERSION }}
         with:
           arguments: full-release
-
-      # ============================================
-      # Stage 4: Push Go Module Tags
-      # ============================================
-      - name: Push Go Module Tags
-        run: |
-          RELEASE_TAG="v${{ inputs.releaseVersion }}"
-          echo "Creating Go module tags for: $RELEASE_TAG"
-          
-          find . -name "go.mod" -type f | while read -r gomod; do
-            dir=$(dirname "$gomod")
-            dir=${dir#./}
-            module=$(echo "$dir" | sed 's|/v[0-9]*$||')
-            
-            if [ -n "$module" ] && [ "$module" != "." ]; then
-              tag="${module}/${RELEASE_TAG}"
-              echo "Creating tag: $tag"
-              git tag "$tag" "$RELEASE_TAG" 2>/dev/null || echo "Tag $tag already exists"
-              git push origin "$tag" 2>/dev/null || echo "Tag $tag already pushed"
-            fi
-          done
-
-      # ============================================
-      # Stage 5: Prepare for Next Development Iteration
-      # (Replaces: maven-release-plugin prepare for next development iteration)
-      # ============================================
-      - name: Set next development version
-        run: |
-          echo "Setting version to ${{ inputs.nextVersion }}"
-          mvn -B versions:set -DnewVersion=${{ inputs.nextVersion }}
-          
-      - name: Commit next development version
-        run: |
-          git add -A
-          git commit -m "[release] prepare for next development iteration"
-          git push origin main

@@ -4,7 +4,7 @@
 
     <groupId>com.example.jreleaser</groupId>
     <artifactId>jreleaser-services</artifactId>
-    <version>1 7</version>
+    <version>1.11</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -53,6 +53,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jreleaser</groupId>
+                <artifactId>jreleaser-maven-plugin</artifactId>
             </plugin>
         </plugins>
         <pluginManagement>
@@ -173,6 +177,13 @@
                     <configuration>
                         <generateBackupPoms>false</generateBackupPoms>
                     </configuration>
+                </plugin>
+                <!-- JReleaser for release automation (replaces maven-release-plugin) -->
+                <plugin>
+                    <groupId>org.jreleaser</groupId>
+                    <artifactId>jreleaser-maven-plugin</artifactId>
+                    <version>1.16.0</version>
+                    <inherited>false</inherited>
                 </plugin>
             </plugins>
         </pluginManagement>

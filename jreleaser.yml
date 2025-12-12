@@ -1,5 +1,5 @@
 # JReleaser Configuration for grpc-services
-# This configuration creates GitLab releases with Go-compatible tags (v{version})
+# This configuration creates GitHub releases with Go-compatible tags (v{version})
 # matching the Maven POM version.
 
 # Project metadata - version is read from pom.xml automatically when using Maven plugin
@@ -13,51 +13,31 @@ project:
     # Use 'early-access' label for snapshot releases
     label: early-access
 
-# GitLab release configuration
+# GitHub release configuration
 release:
   github:
-    # Enable GitLab releases
     enabled: true
-    
-    # GitLab host (without protocol, JReleaser adds https://)
     host: github.com
-    
-    # Repository owner (group/namespace)
     owner: RohitRed19
-    
-    # Repository name
     name: jReleaser-for-proto-code-gen
-    
-    # Tag name format: v{version} (e.g., v)
-    # {{projectVersion}} is automatically resolved from Maven POM
     tagName: v{{projectVersion}}
-    
-    # Release name format
     releaseName: Release v{{projectVersion}}
-    
-    # Overwrite existing release with same tag (useful for re-releases)
     overwrite: true
-    
-    # Skip creating the tag if it already exists
-    # Set to true if tags are created by maven-release-plugin
     skipTag: false
-    
-    # Skip creating the release (only create tag)
     skipRelease: false
-    
-    # Branch to release from
     branch: main
-    
-    # Connection timeouts
     connectTimeout: 20
     readTimeout: 60
     
-    # Changelog configuration
+    # Commit author for version commits
+    commitAuthor:
+      name: github-actions[bot]
+      email: github-actions[bot]@users.noreply.github.com
+    
     changelog:
       enabled: true
       formatted: ALWAYS
       preset: conventional-commits
-      # Hide merge commits and bot contributions
       hide:
         categories:
           - merge
@@ -67,8 +47,27 @@ release:
 
 hooks:
   command:
+    # ============================================
+    # BEFORE: Commit the release version
+    # (pom.xml must already have SNAPSHOT removed before running JReleaser)
+    # ============================================
+    before:
+      - active: RELEASE
+        verbose: true
+        filter:
+          includes: [ 'release' ]
+        cmd: >
+          sh -c '
+            echo "Committing release version v{{projectVersion}}..."
+            git add -A
+            git diff --cached --quiet || git commit -m "[release] prepare release v{{projectVersion}}"
+          '
+
+    # ============================================
+    # SUCCESS: After release - Go module tags + Next SNAPSHOT
+    # ============================================
     success:
-    # For every Go module folder, create a tag
+      # Create Go module tags
       - active: RELEASE
         verbose: true
         filter:
@@ -76,13 +75,32 @@ hooks:
         cmd: >
           sh -c '
             echo "Generating Go module tags..."
-            for mod in $(find . -name go.mod); do
+            for mod in $(find . -name go.mod -not -path "*/target/*" -not -path "*/out/*"); do
               dir=$(dirname "$mod")
-              module=${dir#./}
+              dir=${dir#./}
+              module=${dir%/v[0-9]*}
+              
+              # Skip root go.mod if any
+              [ -z "$module" ] && continue
+              
               tag="${module}/v{{projectVersion}}"
-
               echo "Creating tag: $tag"
               git tag -f "$tag"
               git push origin "$tag"
             done
+          '
+
+      # Prepare for next development iteration
+      - active: RELEASE
+        verbose: true
+        filter:
+          includes: [ 'release' ]
+        cmd: >
+          sh -c '
+            echo "Preparing next development iteration..."
+            mvn -B versions:set -DnextSnapshot -DprocessAllModules
+            mvn -B versions:commit
+            git add -A
+            git commit -m "[release] prepare for next development iteration"
+            git push origin main
           '

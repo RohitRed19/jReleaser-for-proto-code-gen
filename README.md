@@ -8,6 +8,7 @@ A multi-language Protocol Buffer code generation and release management project 
 - **Centralized version management**: Maven manages versions across all language targets
 - **Local Nexus deployment**: Deploy Maven JARs, Python packages (PyPI), Go modules, and Rust crates to a local Nexus repository
 - **Automated Go module versioning**: Go modules are automatically versioned based on Maven project version
+- **JReleaser integration**: Automated GitHub releases with changelog generation, replacing `maven-release-plugin`
 
 ## Project Structure
 
@@ -140,10 +141,81 @@ Deploys:
 - Python packages to PyPI repository
 - Rust crates to Cargo registry (if present)
 
-### Release a New Version
+## Releasing with JReleaser
+
+This project uses **JReleaser** with the **versions-maven-plugin** to manage releases, replacing the traditional `maven-release-plugin`.
+
+### Comparison: maven-release-plugin vs JReleaser
+
+| maven-release-plugin | JReleaser + versions-maven-plugin |
+|---------------------|-----------------------------------|
+| `mvn release:prepare` | `mvn versions:set -DremoveSnapshot` + `mvn jreleaser:release` |
+| `mvn release:perform` | `mvn deploy` (artifacts already built) |
+
+### Release a New Version (Local)
+
+JReleaser handles most of the release process automatically via hooks in `jreleaser.yml`:
+
+| Step | Handled By |
+|------|------------|
+| Commit release version | JReleaser `before` hook |
+| Create Git tag | JReleaser |
+| Create GitHub Release | JReleaser |
+| Generate changelog | JReleaser |
+| Create Go module tags | JReleaser `success` hook |
+| Set next SNAPSHOT | JReleaser `success` hook |
+| Commit & push | JReleaser `success` hook |
+
+#### Two Commands to Release
 
 ```bash
-mvn release:prepare release:perform -s settings.xml
+# Step 1: Remove SNAPSHOT (must be done before JReleaser reads version)
+mvn versions:set -DremoveSnapshot -DprocessAllModules && mvn versions:commit
+
+# Step 2: JReleaser handles everything else!
+export JRELEASER_GITHUB_TOKEN=ghp_your_token_here
+mvn jreleaser:release
+```
+
+This will automatically:
+1. ✅ Commit: `[release] prepare release v1.7`
+2. ✅ Create Git tag `v1.7`
+3. ✅ Create GitHub Release with auto-generated changelog
+4. ✅ Create Go module tags (e.g., `hello/go/v1.7`)
+5. ✅ Set next SNAPSHOT version (e.g., `1.8-SNAPSHOT`)
+6. ✅ Commit: `[release] prepare for next development iteration`
+7. ✅ Push to `main`
+
+#### One-Liner Release
+
+```bash
+mvn versions:set -DremoveSnapshot -DprocessAllModules && mvn versions:commit && \
+JRELEASER_GITHUB_TOKEN=ghp_xxx mvn jreleaser:release
+```
+
+#### With Build & Deploy
+
+```bash
+mvn versions:set -DremoveSnapshot -DprocessAllModules && mvn versions:commit && \
+mvn clean package -DskipTests && \
+JRELEASER_GITHUB_TOKEN=ghp_xxx mvn jreleaser:release
+```
+
+### JReleaser Maven Goals
+
+| Goal | Description |
+|------|-------------|
+| `mvn jreleaser:config` | Display current configuration |
+| `mvn jreleaser:release` | Create Git tag + GitHub release |
+| `mvn jreleaser:full-release` | Full release including announcements |
+| `mvn jreleaser:changelog` | Generate changelog only |
+
+### Dry Run
+
+Test the release without making changes:
+
+```bash
+mvn jreleaser:release -Djreleaser.dry.run=true
 ```
 
 ## CI/CD with GitHub Actions
@@ -155,20 +227,25 @@ This project includes GitHub Actions workflows for automated releases.
 Trigger a release manually from the GitHub Actions UI:
 
 1. Go to **Actions** → **Release** → **Run workflow**
-2. Optionally specify release and development versions
+2. Click **Run workflow** (no inputs required - versions are calculated automatically!)
 3. The workflow will:
-   - Run `mvn release:prepare`
-   - Create Go module tags (e.g., `hello/go/v1.3.0`)
-   - Run `mvn release:perform`
-   - Create a GitHub Release with changelog
+   - Strip `-SNAPSHOT` via `versions:set -DremoveSnapshot`
+   - Build artifacts
+   - Run JReleaser which handles:
+     - Commit: `[release] prepare release vX.Y`
+     - Create Git tag + GitHub Release
+     - Create Go module tags
+     - Set next SNAPSHOT via `versions:set -DnextSnapshot`
+     - Commit: `[release] prepare for next development iteration`
+     - Push to main
 
 ### Automatic Release on Tag
 
 Push a version tag to trigger a release:
 
 ```bash
-git tag v1.3.0
-git push origin v1.3.0
+git tag v1.7
+git push origin v1.7
 ```
 
 This will:
