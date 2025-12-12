@@ -4,7 +4,7 @@
 
     <groupId>com.example.jreleaser</groupId>
     <artifactId>jreleaser-services</artifactId>
-    <version>1.6-SNAPSHOT</version>
+    <version>1 7</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -161,32 +161,18 @@
                     <version>3.1.4</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>3.2.0</version>
-                    <configuration>
-                        <tagNameFormat>v@{project.version}</tagNameFormat>
-                        <autoVersionSubmodules>true</autoVersionSubmodules>
-                        <checkModificationExcludes>
-                            <checkModificationExclue>pom.xml</checkModificationExclue>
-                        </checkModificationExcludes>
-                        <providerImplementations>
-                            <git>jgit</git>
-                        </providerImplementations>
-                    </configuration>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.maven.scm</groupId>
-                            <artifactId>maven-scm-provider-jgit</artifactId>
-                            <version>2.2.1</version>
-                            <scope>runtime</scope>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
                     <version>3.6.1</version>
+                </plugin>
+                <!-- Version management (replaces maven-release-plugin version handling) -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>2.18.0</version>
+                    <configuration>
+                        <generateBackupPoms>false</generateBackupPoms>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>

@@ -79,3 +79,5 @@ go.work
 ## Custom Ignore Template
 bin
 **/dependency-reduced-pom.xml
+# Added by goreleaser init:
+dist/

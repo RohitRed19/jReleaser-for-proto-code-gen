@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       releaseVersion:
-        description: 'Release version (e.g., 1.3.0)'
-        required: false
-      developmentVersion:
-        description: 'Next development version (e.g., 1.4.0-SNAPSHOT)'
-        required: false
+        description: 'Release version (e.g., 1.6)'
+        required: true
+      nextVersion:
+        description: 'Next development version (e.g., 1.7-SNAPSHOT)'
+        required: true
 
 jobs:
   release:
@@ -71,59 +71,78 @@ jobs:
           </settings>
           EOF
 
-      # Stage 1: Prepare Release
-      - name: Prepare Release
-        env:
-          NEXUS_USER: ${{ secrets.NEXUS_USER }}
-          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+      # ============================================
+      # Stage 1: Prepare Release Version
+      # (Replaces: maven-release-plugin prepare release)
+      # ============================================
+      - name: Set release version
         run: |
-          RELEASE_ARGS=""
-          if [ -n "${{ github.event.inputs.releaseVersion }}" ]; then
-            RELEASE_ARGS="$RELEASE_ARGS -DreleaseVersion=${{ github.event.inputs.releaseVersion }}"
-          fi
-          if [ -n "${{ github.event.inputs.developmentVersion }}" ]; then
-            RELEASE_ARGS="$RELEASE_ARGS -DdevelopmentVersion=${{ github.event.inputs.developmentVersion }}"
-          fi
-          mvn -B release:prepare $RELEASE_ARGS -DskipRust=true
-
-      # Stage 2: Push Go Module Tags
-      - name: Push Go Module Tags
-        run: |
-          # Get the current release tag
-          CURRENT_TAG=$(git describe --tags --abbrev=0)
-          echo "Current release tag: $CURRENT_TAG"
+          echo "Setting version to ${{ inputs.releaseVersion }}"
+          mvn -B versions:set -DnewVersion=${{ inputs.releaseVersion }}
           
-          # Find all go.mod files and create module-specific tags
-          find . -name "go.mod" -type f | while read -r gomod; do
-            # Get the directory containing go.mod
-            dir=$(dirname "$gomod")
-            # Remove leading ./
-            dir=${dir#./}
-            # Remove trailing /v<number> for versioned modules
-            module=$(echo "$dir" | sed 's|/v[0-9]*$||')
-            
-            if [ -n "$module" ] && [ "$module" != "." ]; then
-              tag="${module}/${CURRENT_TAG}"
-              echo "Creating tag: $tag"
-              git tag "$tag" "$CURRENT_TAG" || echo "Tag $tag already exists"
-              git push origin "$tag" || echo "Failed to push $tag"
-            fi
-          done
+      - name: Commit release version
+        run: |
+          git add -A
+          git commit -m "[release] prepare release v${{ inputs.releaseVersion }}"
 
-      # Stage 3: Perform Release
-      - name: Perform Release
+      # ============================================
+      # Stage 2: Build and Deploy
+      # ============================================
+      - name: Build artifacts
+        run: mvn -B clean package -DskipTests -DskipRust=true
+
+      - name: Deploy to Nexus
+        if: ${{ vars.DEPLOY_TO_NEXUS == 'true' }}
         env:
           NEXUS_USER: ${{ secrets.NEXUS_USER }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-        run: |
-          mvn -B release:perform -DskipRust=true
+        run: mvn -B deploy -DskipTests -DskipRust=true
+        continue-on-error: true
 
-      # Optional: Create GitHub Release with JReleaser
-      - name: Run JReleaser
+      # ============================================
+      # Stage 3: Create Release with JReleaser
+      # (Creates Git tag + GitHub Release + Changelog)
+      # ============================================
+      - name: Release with JReleaser
         uses: jreleaser/release-action@v2
         env:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JRELEASER_PROJECT_VERSION: ${{ inputs.releaseVersion }}
         with:
           arguments: full-release
-        continue-on-error: true
 
+      # ============================================
+      # Stage 4: Push Go Module Tags
+      # ============================================
+      - name: Push Go Module Tags
+        run: |
+          RELEASE_TAG="v${{ inputs.releaseVersion }}"
+          echo "Creating Go module tags for: $RELEASE_TAG"
+          
+          find . -name "go.mod" -type f | while read -r gomod; do
+            dir=$(dirname "$gomod")
+            dir=${dir#./}
+            module=$(echo "$dir" | sed 's|/v[0-9]*$||')
+            
+            if [ -n "$module" ] && [ "$module" != "." ]; then
+              tag="${module}/${RELEASE_TAG}"
+              echo "Creating tag: $tag"
+              git tag "$tag" "$RELEASE_TAG" 2>/dev/null || echo "Tag $tag already exists"
+              git push origin "$tag" 2>/dev/null || echo "Tag $tag already pushed"
+            fi
+          done
+
+      # ============================================
+      # Stage 5: Prepare for Next Development Iteration
+      # (Replaces: maven-release-plugin prepare for next development iteration)
+      # ============================================
+      - name: Set next development version
+        run: |
+          echo "Setting version to ${{ inputs.nextVersion }}"
+          mvn -B versions:set -DnewVersion=${{ inputs.nextVersion }}
+          
+      - name: Commit next development version
+        run: |
+          git add -A
+          git commit -m "[release] prepare for next development iteration"
+          git push origin main

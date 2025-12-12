@@ -65,20 +65,24 @@ release:
           - dependabot
           - renovate
 
-# Hooks to create additional tags for each Go module
 hooks:
   command:
     success:
-    # Step 1: Create the tag
+    # For every Go module folder, create a tag
       - active: RELEASE
-        cmd: 'git tag -f hello/go/v{{projectVersion}}'
         verbose: true
         filter:
           includes: [ 'release' ]
-    
-    # Step 2: Push the tag
-      - active: RELEASE
-        cmd: 'git push origin hello/go/v{{projectVersion}}'
-        verbose: true
-        filter:
-          includes: [ 'release' ]
+        cmd: >
+          sh -c '
+            echo "Generating Go module tags..."
+            for mod in $(find . -name go.mod); do
+              dir=$(dirname "$mod")
+              module=${dir#./}
+              tag="${module}/v{{projectVersion}}"
+
+              echo "Creating tag: $tag"
+              git tag -f "$tag"
+              git push origin "$tag"
+            done
+          '
