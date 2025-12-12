@@ -4,7 +4,7 @@
 
     <groupId>com.example.jreleaser</groupId>
     <artifactId>jreleaser-services</artifactId>
-    <version>1.25-SNAPSHOT</version>
+    <version>1.26-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
