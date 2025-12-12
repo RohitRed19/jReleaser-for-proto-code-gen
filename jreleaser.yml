@@ -88,7 +88,8 @@ hooks:
             fi
             echo "Creating tag: $tag"
             git tag -f "$tag"
-            git push origin "$tag"
+            # Push quietly to avoid progress output on stderr being logged as errors
+            git push --no-progress -q origin "$tag"
           done
       # Prepare for next development iteration
       - active: RELEASE
@@ -102,5 +103,6 @@ hooks:
             mvn -B versions:commit
             git add -A
             git commit -m "[release] prepare for next development iteration"
-            git push origin main
+            # Push quietly to avoid progress output on stderr being logged as errors
+            git push --no-progress -q origin main
           '
